@@ -10,33 +10,354 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as CodeRouteImport } from './routes/code'
+import { Route as CommunicationsRouteImport } from './routes/communications'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DevicesRouteImport } from './routes/devices'
+import { Route as EmailRouteImport } from './routes/email'
+import { Route as FilesRouteImport } from './routes/files'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as MapsRouteImport } from './routes/maps'
+import { Route as MemoryRouteImport } from './routes/memory'
+import { Route as NumbersRouteImport } from './routes/numbers'
+import { Route as PermissionsRouteImport } from './routes/permissions'
+import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SkillsRouteImport } from './routes/skills'
+import { Route as VoiceRouteImport } from './routes/voice'
+import { Route as WebRouteImport } from './routes/web'
+import { Route as BuilderIndexRouteImport } from './routes/builder.index'
+import { Route as BuilderProjectIdRouteImport } from './routes/builder.$projectId'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsAccountsRouteImport } from './routes/settings.accounts'
+import { Route as SettingsAppearanceRouteImport } from './routes/settings.appearance'
+import { Route as SettingsIdentityRouteImport } from './routes/settings.identity'
+import { Route as SettingsModelRouteImport } from './routes/settings.model'
+import { Route as SettingsPersonalityRouteImport } from './routes/settings.personality'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CodeRoute = CodeRouteImport.update({
+  id: '/code',
+  path: '/code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunicationsRoute = CommunicationsRouteImport.update({
+  id: '/communications',
+  path: '/communications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevicesRoute = DevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailRoute = EmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesRoute = FilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapsRoute = MapsRouteImport.update({
+  id: '/maps',
+  path: '/maps',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoryRoute = MemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NumbersRoute = NumbersRouteImport.update({
+  id: '/numbers',
+  path: '/numbers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PermissionsRoute = PermissionsRouteImport.update({
+  id: '/permissions',
+  path: '/permissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlannerRoute = PlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillsRoute = SkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoiceRoute = VoiceRouteImport.update({
+  id: '/voice',
+  path: '/voice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebRoute = WebRouteImport.update({
+  id: '/web',
+  path: '/web',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuilderIndexRoute = BuilderIndexRouteImport.update({
+  id: '/builder/',
+  path: '/builder/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuilderProjectIdRoute = BuilderProjectIdRouteImport.update({
+  id: '/builder/$projectId',
+  path: '/builder/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAccountsRoute = SettingsAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAppearanceRoute = SettingsAppearanceRouteImport.update({
+  id: '/appearance',
+  path: '/appearance',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsIdentityRoute = SettingsIdentityRouteImport.update({
+  id: '/identity',
+  path: '/identity',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsModelRoute = SettingsModelRouteImport.update({
+  id: '/model',
+  path: '/model',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsPersonalityRoute = SettingsPersonalityRouteImport.update({
+  id: '/personality',
+  path: '/personality',
+  getParentRoute: () => SettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
+  '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
+  '/files': typeof FilesRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
+  '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
+  '/builder/': typeof BuilderIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
+  '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
+  '/files': typeof FilesRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
+  '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
+  '/builder': typeof BuilderIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
+  '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
+  '/files': typeof FilesRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
+  '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
+  '/builder/': typeof BuilderIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/code'
+    | '/communications'
+    | '/dashboard'
+    | '/devices'
+    | '/email'
+    | '/files'
+    | '/knowledge'
+    | '/maps'
+    | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/settings'
+    | '/skills'
+    | '/voice'
+    | '/web'
+    | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
+    | '/builder/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/chat'
+    | '/code'
+    | '/communications'
+    | '/dashboard'
+    | '/devices'
+    | '/email'
+    | '/files'
+    | '/knowledge'
+    | '/maps'
+    | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/skills'
+    | '/voice'
+    | '/web'
+    | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
+    | '/builder'
+    | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/chat'
+    | '/code'
+    | '/communications'
+    | '/dashboard'
+    | '/devices'
+    | '/email'
+    | '/files'
+    | '/knowledge'
+    | '/maps'
+    | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/settings'
+    | '/skills'
+    | '/voice'
+    | '/web'
+    | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
+    | '/builder/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatRoute: typeof ChatRoute
+  CodeRoute: typeof CodeRoute
+  CommunicationsRoute: typeof CommunicationsRoute
+  DashboardRoute: typeof DashboardRoute
+  DevicesRoute: typeof DevicesRoute
+  EmailRoute: typeof EmailRoute
+  FilesRoute: typeof FilesRoute
+  KnowledgeRoute: typeof KnowledgeRoute
+  MapsRoute: typeof MapsRoute
+  MemoryRoute: typeof MemoryRoute
+  NumbersRoute: typeof NumbersRoute
+  PermissionsRoute: typeof PermissionsRoute
+  PlannerRoute: typeof PlannerRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
+  SkillsRoute: typeof SkillsRoute
+  VoiceRoute: typeof VoiceRoute
+  WebRoute: typeof WebRoute
+  BuilderProjectIdRoute: typeof BuilderProjectIdRoute
+  BuilderIndexRoute: typeof BuilderIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +369,227 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/code': {
+      id: '/code'
+      path: '/code'
+      fullPath: '/code'
+      preLoaderRoute: typeof CodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/communications': {
+      id: '/communications'
+      path: '/communications'
+      fullPath: '/communications'
+      preLoaderRoute: typeof CommunicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/devices': {
+      id: '/devices'
+      path: '/devices'
+      fullPath: '/devices'
+      preLoaderRoute: typeof DevicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email': {
+      id: '/email'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof EmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/files': {
+      id: '/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maps': {
+      id: '/maps'
+      path: '/maps'
+      fullPath: '/maps'
+      preLoaderRoute: typeof MapsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memory': {
+      id: '/memory'
+      path: '/memory'
+      fullPath: '/memory'
+      preLoaderRoute: typeof MemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/numbers': {
+      id: '/numbers'
+      path: '/numbers'
+      fullPath: '/numbers'
+      preLoaderRoute: typeof NumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/permissions': {
+      id: '/permissions'
+      path: '/permissions'
+      fullPath: '/permissions'
+      preLoaderRoute: typeof PermissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planner': {
+      id: '/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof PlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voice': {
+      id: '/voice'
+      path: '/voice'
+      fullPath: '/voice'
+      preLoaderRoute: typeof VoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/web': {
+      id: '/web'
+      path: '/web'
+      fullPath: '/web'
+      preLoaderRoute: typeof WebRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builder/': {
+      id: '/builder/'
+      path: '/builder'
+      fullPath: '/builder/'
+      preLoaderRoute: typeof BuilderIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builder/$projectId': {
+      id: '/builder/$projectId'
+      path: '/builder/$projectId'
+      fullPath: '/builder/$projectId'
+      preLoaderRoute: typeof BuilderProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/accounts': {
+      id: '/settings/accounts'
+      path: '/accounts'
+      fullPath: '/settings/accounts'
+      preLoaderRoute: typeof SettingsAccountsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/appearance': {
+      id: '/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof SettingsAppearanceRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/identity': {
+      id: '/settings/identity'
+      path: '/identity'
+      fullPath: '/settings/identity'
+      preLoaderRoute: typeof SettingsIdentityRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/model': {
+      id: '/settings/model'
+      path: '/model'
+      fullPath: '/settings/model'
+      preLoaderRoute: typeof SettingsModelRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/personality': {
+      id: '/settings/personality'
+      path: '/personality'
+      fullPath: '/settings/personality'
+      preLoaderRoute: typeof SettingsPersonalityRouteImport
+      parentRoute: typeof SettingsRoute
+    }
   }
 }
 
+interface SettingsRouteChildren {
+  SettingsAccountsRoute: typeof SettingsAccountsRoute
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsIdentityRoute: typeof SettingsIdentityRoute
+  SettingsModelRoute: typeof SettingsModelRoute
+  SettingsPersonalityRoute: typeof SettingsPersonalityRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAccountsRoute: SettingsAccountsRoute,
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsIdentityRoute: SettingsIdentityRoute,
+  SettingsModelRoute: SettingsModelRoute,
+  SettingsPersonalityRoute: SettingsPersonalityRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatRoute: ChatRoute,
+  CodeRoute: CodeRoute,
+  CommunicationsRoute: CommunicationsRoute,
+  DashboardRoute: DashboardRoute,
+  DevicesRoute: DevicesRoute,
+  EmailRoute: EmailRoute,
+  FilesRoute: FilesRoute,
+  KnowledgeRoute: KnowledgeRoute,
+  MapsRoute: MapsRoute,
+  MemoryRoute: MemoryRoute,
+  NumbersRoute: NumbersRoute,
+  PermissionsRoute: PermissionsRoute,
+  PlannerRoute: PlannerRoute,
+  SettingsRoute: SettingsRouteWithChildren,
+  SkillsRoute: SkillsRoute,
+  VoiceRoute: VoiceRoute,
+  WebRoute: WebRoute,
+  BuilderProjectIdRoute: BuilderProjectIdRoute,
+  BuilderIndexRoute: BuilderIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
