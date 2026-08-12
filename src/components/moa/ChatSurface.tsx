@@ -270,7 +270,7 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
       role: "user",
       content: draft.trim(),
       createdAt: Date.now(),
-      attachments: pending.length ? pending : undefined,
+      ...(pending.length ? { attachments: pending } : {}),
     };
     appendMessages([userMsg]);
     setPending([]);
