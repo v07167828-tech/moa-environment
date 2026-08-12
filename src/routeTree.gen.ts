@@ -23,11 +23,18 @@ import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as NumbersRouteImport } from './routes/numbers'
 import { Route as PermissionsRouteImport } from './routes/permissions'
 import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as VoiceRouteImport } from './routes/voice'
 import { Route as WebRouteImport } from './routes/web'
 import { Route as BuilderIndexRouteImport } from './routes/builder.index'
 import { Route as BuilderProjectIdRouteImport } from './routes/builder.$projectId'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsAccountsRouteImport } from './routes/settings.accounts'
+import { Route as SettingsAppearanceRouteImport } from './routes/settings.appearance'
+import { Route as SettingsIdentityRouteImport } from './routes/settings.identity'
+import { Route as SettingsModelRouteImport } from './routes/settings.model'
+import { Route as SettingsPersonalityRouteImport } from './routes/settings.personality'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -99,6 +106,11 @@ const PlannerRoute = PlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SkillsRoute = SkillsRouteImport.update({
   id: '/skills',
   path: '/skills',
@@ -124,6 +136,36 @@ const BuilderProjectIdRoute = BuilderProjectIdRouteImport.update({
   path: '/builder/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAccountsRoute = SettingsAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsAppearanceRoute = SettingsAppearanceRouteImport.update({
+  id: '/appearance',
+  path: '/appearance',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsIdentityRoute = SettingsIdentityRouteImport.update({
+  id: '/identity',
+  path: '/identity',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsModelRoute = SettingsModelRouteImport.update({
+  id: '/model',
+  path: '/model',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsPersonalityRoute = SettingsPersonalityRouteImport.update({
+  id: '/personality',
+  path: '/personality',
+  getParentRoute: () => SettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -140,11 +182,18 @@ export interface FileRoutesByFullPath {
   '/numbers': typeof NumbersRoute
   '/permissions': typeof PermissionsRoute
   '/planner': typeof PlannerRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
   '/builder/': typeof BuilderIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,7 +214,13 @@ export interface FileRoutesByTo {
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
   '/builder': typeof BuilderIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,11 +238,18 @@ export interface FileRoutesById {
   '/numbers': typeof NumbersRoute
   '/permissions': typeof PermissionsRoute
   '/planner': typeof PlannerRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/settings/accounts': typeof SettingsAccountsRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/identity': typeof SettingsIdentityRoute
+  '/settings/model': typeof SettingsModelRoute
+  '/settings/personality': typeof SettingsPersonalityRoute
   '/builder/': typeof BuilderIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,11 +268,18 @@ export interface FileRouteTypes {
     | '/numbers'
     | '/permissions'
     | '/planner'
+    | '/settings'
     | '/skills'
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
     | '/builder/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -231,7 +300,13 @@ export interface FileRouteTypes {
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
     | '/builder'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -248,11 +323,18 @@ export interface FileRouteTypes {
     | '/numbers'
     | '/permissions'
     | '/planner'
+    | '/settings'
     | '/skills'
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/settings/accounts'
+    | '/settings/appearance'
+    | '/settings/identity'
+    | '/settings/model'
+    | '/settings/personality'
     | '/builder/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -270,6 +352,7 @@ export interface RootRouteChildren {
   NumbersRoute: typeof NumbersRoute
   PermissionsRoute: typeof PermissionsRoute
   PlannerRoute: typeof PlannerRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   SkillsRoute: typeof SkillsRoute
   VoiceRoute: typeof VoiceRoute
   WebRoute: typeof WebRoute
@@ -377,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlannerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/skills': {
       id: '/skills'
       path: '/skills'
@@ -412,8 +502,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuilderProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/accounts': {
+      id: '/settings/accounts'
+      path: '/accounts'
+      fullPath: '/settings/accounts'
+      preLoaderRoute: typeof SettingsAccountsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/appearance': {
+      id: '/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof SettingsAppearanceRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/identity': {
+      id: '/settings/identity'
+      path: '/identity'
+      fullPath: '/settings/identity'
+      preLoaderRoute: typeof SettingsIdentityRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/model': {
+      id: '/settings/model'
+      path: '/model'
+      fullPath: '/settings/model'
+      preLoaderRoute: typeof SettingsModelRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/personality': {
+      id: '/settings/personality'
+      path: '/personality'
+      fullPath: '/settings/personality'
+      preLoaderRoute: typeof SettingsPersonalityRouteImport
+      parentRoute: typeof SettingsRoute
+    }
   }
 }
+
+interface SettingsRouteChildren {
+  SettingsAccountsRoute: typeof SettingsAccountsRoute
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsIdentityRoute: typeof SettingsIdentityRoute
+  SettingsModelRoute: typeof SettingsModelRoute
+  SettingsPersonalityRoute: typeof SettingsPersonalityRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAccountsRoute: SettingsAccountsRoute,
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsIdentityRoute: SettingsIdentityRoute,
+  SettingsModelRoute: SettingsModelRoute,
+  SettingsPersonalityRoute: SettingsPersonalityRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -430,6 +584,7 @@ const rootRouteChildren: RootRouteChildren = {
   NumbersRoute: NumbersRoute,
   PermissionsRoute: PermissionsRoute,
   PlannerRoute: PlannerRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   SkillsRoute: SkillsRoute,
   VoiceRoute: VoiceRoute,
   WebRoute: WebRoute,

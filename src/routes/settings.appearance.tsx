@@ -174,20 +174,18 @@ function AppearancePage() {
           <Label>Font size {a.fontSize}px</Label>
           <Slider value={[a.fontSize]} min={13} max={20} onValueChange={([v]) => patch((x) => (x.fontSize = v ?? 16))} />
         </div>
-        {[
-          ["Animations", "animations"],
-          ["Glow effects", "glow"],
-          ["Reduced motion", "reducedMotion"],
-        ].map(([label, key]) => (
-          <div key={key} className="flex items-center justify-between">
-            <Label htmlFor={key}>{label}</Label>
-            <Switch
-              id={key}
-              checked={Boolean(a[key as keyof Appearance])}
-              onCheckedChange={(v) => patch((x) => Object.assign(x, { [key]: v }))}
-            />
-          </div>
-        ))}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="anim">Animations</Label>
+          <Switch id="anim" checked={a.animations} onCheckedChange={(v) => patch((x) => (x.animations = v))} />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="glow">Glow effects</Label>
+          <Switch id="glow" checked={a.glow} onCheckedChange={(v) => patch((x) => (x.glow = v))} />
+        </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="rm">Reduced motion</Label>
+          <Switch id="rm" checked={a.reducedMotion} onCheckedChange={(v) => patch((x) => (x.reducedMotion = v))} />
+        </div>
       </section>
     </div>
   );
