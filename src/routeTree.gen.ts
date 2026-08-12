@@ -26,6 +26,8 @@ import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as VoiceRouteImport } from './routes/voice'
 import { Route as WebRouteImport } from './routes/web'
+import { Route as BuilderIndexRouteImport } from './routes/builder.index'
+import { Route as BuilderProjectIdRouteImport } from './routes/builder.$projectId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +114,16 @@ const WebRoute = WebRouteImport.update({
   path: '/web',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuilderIndexRoute = BuilderIndexRouteImport.update({
+  id: '/builder/',
+  path: '/builder/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuilderProjectIdRoute = BuilderProjectIdRouteImport.update({
+  id: '/builder/$projectId',
+  path: '/builder/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +143,8 @@ export interface FileRoutesByFullPath {
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/builder/': typeof BuilderIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +164,8 @@ export interface FileRoutesByTo {
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/builder': typeof BuilderIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +186,8 @@ export interface FileRoutesById {
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
+  '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/builder/': typeof BuilderIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +209,8 @@ export interface FileRouteTypes {
     | '/skills'
     | '/voice'
     | '/web'
+    | '/builder/$projectId'
+    | '/builder/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +230,8 @@ export interface FileRouteTypes {
     | '/skills'
     | '/voice'
     | '/web'
+    | '/builder/$projectId'
+    | '/builder'
   id:
     | '__root__'
     | '/'
@@ -229,6 +251,8 @@ export interface FileRouteTypes {
     | '/skills'
     | '/voice'
     | '/web'
+    | '/builder/$projectId'
+    | '/builder/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +273,8 @@ export interface RootRouteChildren {
   SkillsRoute: typeof SkillsRoute
   VoiceRoute: typeof VoiceRoute
   WebRoute: typeof WebRoute
+  BuilderProjectIdRoute: typeof BuilderProjectIdRoute
+  BuilderIndexRoute: typeof BuilderIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +398,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WebRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/builder/': {
+      id: '/builder/'
+      path: '/builder'
+      fullPath: '/builder/'
+      preLoaderRoute: typeof BuilderIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builder/$projectId': {
+      id: '/builder/$projectId'
+      path: '/builder/$projectId'
+      fullPath: '/builder/$projectId'
+      preLoaderRoute: typeof BuilderProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +433,8 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsRoute: SkillsRoute,
   VoiceRoute: VoiceRoute,
   WebRoute: WebRoute,
+  BuilderProjectIdRoute: BuilderProjectIdRoute,
+  BuilderIndexRoute: BuilderIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
