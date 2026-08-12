@@ -11,10 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as CodeRouteImport } from './routes/code'
+import { Route as CommunicationsRouteImport } from './routes/communications'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DevicesRouteImport } from './routes/devices'
+import { Route as EmailRouteImport } from './routes/email'
 import { Route as FilesRouteImport } from './routes/files'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as MapsRouteImport } from './routes/maps'
 import { Route as MemoryRouteImport } from './routes/memory'
+import { Route as NumbersRouteImport } from './routes/numbers'
+import { Route as PermissionsRouteImport } from './routes/permissions'
+import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as SkillsRouteImport } from './routes/skills'
+import { Route as VoiceRouteImport } from './routes/voice'
+import { Route as WebRouteImport } from './routes/web'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,9 +37,29 @@ const ChatRoute = ChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CodeRoute = CodeRouteImport.update({
+  id: '/code',
+  path: '/code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunicationsRoute = CommunicationsRouteImport.update({
+  id: '/communications',
+  path: '/communications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevicesRoute = DevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailRoute = EmailRouteImport.update({
+  id: '/email',
+  path: '/email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FilesRoute = FilesRouteImport.update({
@@ -41,59 +72,183 @@ const KnowledgeRoute = KnowledgeRouteImport.update({
   path: '/knowledge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MapsRoute = MapsRouteImport.update({
+  id: '/maps',
+  path: '/maps',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MemoryRoute = MemoryRouteImport.update({
   id: '/memory',
   path: '/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NumbersRoute = NumbersRouteImport.update({
+  id: '/numbers',
+  path: '/numbers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PermissionsRoute = PermissionsRouteImport.update({
+  id: '/permissions',
+  path: '/permissions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlannerRoute = PlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillsRoute = SkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoiceRoute = VoiceRouteImport.update({
+  id: '/voice',
+  path: '/voice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebRoute = WebRouteImport.update({
+  id: '/web',
+  path: '/web',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
   '/files': typeof FilesRoute
   '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
   '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
   '/files': typeof FilesRoute
   '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
   '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/code': typeof CodeRoute
+  '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
+  '/devices': typeof DevicesRoute
+  '/email': typeof EmailRoute
   '/files': typeof FilesRoute
   '/knowledge': typeof KnowledgeRoute
+  '/maps': typeof MapsRoute
   '/memory': typeof MemoryRoute
+  '/numbers': typeof NumbersRoute
+  '/permissions': typeof PermissionsRoute
+  '/planner': typeof PlannerRoute
+  '/skills': typeof SkillsRoute
+  '/voice': typeof VoiceRoute
+  '/web': typeof WebRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/dashboard' | '/files' | '/knowledge' | '/memory'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/code'
+    | '/communications'
+    | '/dashboard'
+    | '/devices'
+    | '/email'
+    | '/files'
+    | '/knowledge'
+    | '/maps'
+    | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/skills'
+    | '/voice'
+    | '/web'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/dashboard' | '/files' | '/knowledge' | '/memory'
+  to:
+    | '/'
+    | '/chat'
+    | '/code'
+    | '/communications'
+    | '/dashboard'
+    | '/devices'
+    | '/email'
+    | '/files'
+    | '/knowledge'
+    | '/maps'
+    | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/skills'
+    | '/voice'
+    | '/web'
   id:
     | '__root__'
     | '/'
     | '/chat'
+    | '/code'
+    | '/communications'
     | '/dashboard'
+    | '/devices'
+    | '/email'
     | '/files'
     | '/knowledge'
+    | '/maps'
     | '/memory'
+    | '/numbers'
+    | '/permissions'
+    | '/planner'
+    | '/skills'
+    | '/voice'
+    | '/web'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
+  CodeRoute: typeof CodeRoute
+  CommunicationsRoute: typeof CommunicationsRoute
   DashboardRoute: typeof DashboardRoute
+  DevicesRoute: typeof DevicesRoute
+  EmailRoute: typeof EmailRoute
   FilesRoute: typeof FilesRoute
   KnowledgeRoute: typeof KnowledgeRoute
+  MapsRoute: typeof MapsRoute
   MemoryRoute: typeof MemoryRoute
+  NumbersRoute: typeof NumbersRoute
+  PermissionsRoute: typeof PermissionsRoute
+  PlannerRoute: typeof PlannerRoute
+  SkillsRoute: typeof SkillsRoute
+  VoiceRoute: typeof VoiceRoute
+  WebRoute: typeof WebRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -112,11 +267,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/code': {
+      id: '/code'
+      path: '/code'
+      fullPath: '/code'
+      preLoaderRoute: typeof CodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/communications': {
+      id: '/communications'
+      path: '/communications'
+      fullPath: '/communications'
+      preLoaderRoute: typeof CommunicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/devices': {
+      id: '/devices'
+      path: '/devices'
+      fullPath: '/devices'
+      preLoaderRoute: typeof DevicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email': {
+      id: '/email'
+      path: '/email'
+      fullPath: '/email'
+      preLoaderRoute: typeof EmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/files': {
@@ -133,11 +316,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/maps': {
+      id: '/maps'
+      path: '/maps'
+      fullPath: '/maps'
+      preLoaderRoute: typeof MapsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/memory': {
       id: '/memory'
       path: '/memory'
       fullPath: '/memory'
       preLoaderRoute: typeof MemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/numbers': {
+      id: '/numbers'
+      path: '/numbers'
+      fullPath: '/numbers'
+      preLoaderRoute: typeof NumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/permissions': {
+      id: '/permissions'
+      path: '/permissions'
+      fullPath: '/permissions'
+      preLoaderRoute: typeof PermissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planner': {
+      id: '/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof PlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/voice': {
+      id: '/voice'
+      path: '/voice'
+      fullPath: '/voice'
+      preLoaderRoute: typeof VoiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/web': {
+      id: '/web'
+      path: '/web'
+      fullPath: '/web'
+      preLoaderRoute: typeof WebRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -146,10 +378,21 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
+  CodeRoute: CodeRoute,
+  CommunicationsRoute: CommunicationsRoute,
   DashboardRoute: DashboardRoute,
+  DevicesRoute: DevicesRoute,
+  EmailRoute: EmailRoute,
   FilesRoute: FilesRoute,
   KnowledgeRoute: KnowledgeRoute,
+  MapsRoute: MapsRoute,
   MemoryRoute: MemoryRoute,
+  NumbersRoute: NumbersRoute,
+  PermissionsRoute: PermissionsRoute,
+  PlannerRoute: PlannerRoute,
+  SkillsRoute: SkillsRoute,
+  VoiceRoute: VoiceRoute,
+  WebRoute: WebRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
