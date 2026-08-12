@@ -137,6 +137,7 @@ function RootComponent() {
           <Outlet />
         </AppShell>
         <Toaster position="top-center" />
+      </MoaProvider>
     </QueryClientProvider>
   );
 }
