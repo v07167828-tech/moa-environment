@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowUp,
   Check,
   Copy,
-  CornerDownLeft,
   FileText,
   Image as ImageIcon,
+  Link2,
+  Camera,
   Mic,
   Paperclip,
   Pencil,
+  Plus,
   RefreshCw,
+  Share2,
   Sparkles,
   Trash2,
   Wrench,
@@ -21,6 +25,13 @@ import { Orb } from "./Orb";
 import { StatusBadge } from "./Status";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 function kindOf(name: string): Attachment["kind"] {
@@ -95,7 +106,9 @@ function MessageRow({
   onRegenerate: () => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [value, setValue] = useState(message.content);
+  const pressRef = useRef<number | null>(null);
   const { state } = useMoa();
   const flat = state.appearance.bubbleStyle === "flat";
 
@@ -104,7 +117,11 @@ function MessageRow({
     return (
       <div className="moa-rise flex justify-center py-1">
         <div className="flex max-w-full items-center gap-2 rounded-full border border-border bg-surface/50 px-3 py-1.5 text-xs text-muted-foreground">
-          {isTool ? <Wrench className="size-3.5" aria-hidden /> : <Sparkles className="size-3.5" aria-hidden />}
+          {isTool ? (
+            <Wrench className="size-3.5" aria-hidden />
+          ) : (
+            <Sparkles className="size-3.5" aria-hidden />
+          )}
           <span className="truncate">
             {isTool && message.toolName ? `${message.toolName}: ` : ""}
             {message.content}
@@ -117,109 +134,154 @@ function MessageRow({
 
   const isUser = message.role === "user";
 
+  const copy = () => {
+    navigator.clipboard?.writeText(message.content);
+    toast.success("Copied");
+  };
+
+  const share = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: message.content });
+        return;
+      } catch {
+        /* dismissed */
+      }
+    }
+    copy();
+    toast.info("Sharing unavailable — copied instead");
+  };
+
+  const startPress = () => {
+    pressRef.current = window.setTimeout(() => setMenuOpen(true), 480);
+  };
+  const endPress = () => {
+    if (pressRef.current) window.clearTimeout(pressRef.current);
+    pressRef.current = null;
+  };
+
   return (
-    <div className={cn("moa-rise group flex gap-3", isUser ? "justify-end" : "justify-start")}>
-      {!isUser && <Orb size="sm" className="mt-1" />}
-      <div className={cn("max-w-[85%] sm:max-w-[72%]", isUser && "text-right")}>
-        <div
-          className={cn(
-            "inline-block w-full px-4 py-3 text-left",
-            flat ? "rounded-lg border border-border bg-transparent" : "rounded-2xl",
-            !flat && isUser && "bg-primary/15 border border-primary/25",
-            !flat && !isUser && "moa-panel",
-          )}
-        >
-          {editing ? (
-            <div className="space-y-2">
-              <Textarea value={value} onChange={(e) => setValue(e.target.value)} rows={3} />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    onEdit(message.id, value);
-                    setEditing(false);
-                  }}
-                >
-                  Save
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
-                  Cancel
-                </Button>
-              </div>
+    <div className={cn("moa-rise group flex gap-2.5", isUser ? "justify-end" : "justify-start")}>
+      {!isUser && <Orb size="xs" showAura={false} className="mt-1" />}
+      <div className={cn("max-w-[86%] sm:max-w-[72%]", isUser && "text-right")}>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Message actions"
+              onTouchStart={startPress}
+              onTouchEnd={endPress}
+              onTouchMove={endPress}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setMenuOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMenuOpen(true);
+                }
+              }}
+              className={cn(
+                "inline-block w-full cursor-default px-4 py-3 text-left",
+                flat ? "rounded-lg border border-border bg-transparent" : "rounded-2xl",
+                !flat && isUser && "border border-primary/25 bg-primary/15",
+                !flat && !isUser && "moa-panel",
+              )}
+            >
+              {editing ? (
+                <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                  <Textarea value={value} onChange={(e) => setValue(e.target.value)} rows={3} />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        onEdit(message.id, value);
+                        setEditing(false);
+                      }}
+                    >
+                      Save
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <MessageBody content={message.content} />
+              )}
+              {message.attachments && message.attachments.length > 0 && (
+                <ul className="mt-3 space-y-1.5">
+                  {message.attachments.map((a) => (
+                    <li
+                      key={a.id}
+                      className="flex items-center gap-2 rounded-md border border-border px-2 py-1.5 text-xs"
+                    >
+                      {a.kind === "image" ? (
+                        <ImageIcon className="size-3.5" aria-hidden />
+                      ) : (
+                        <FileText className="size-3.5" aria-hidden />
+                      )}
+                      <span className="truncate">{a.name}</span>
+                      <span className="text-muted-foreground">{fmtSize(a.size)}</span>
+                      <span className="ml-auto font-mono text-[10px] uppercase text-muted-foreground">
+                        {a.status}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ) : (
-            <MessageBody content={message.content} />
-          )}
-          {message.attachments && message.attachments.length > 0 && (
-            <ul className="mt-3 space-y-1.5">
-              {message.attachments.map((a) => (
-                <li
-                  key={a.id}
-                  className="flex items-center gap-2 rounded-md border border-border px-2 py-1.5 text-xs"
-                >
-                  {a.kind === "image" ? (
-                    <ImageIcon className="size-3.5" aria-hidden />
-                  ) : (
-                    <FileText className="size-3.5" aria-hidden />
-                  )}
-                  <span className="truncate">{a.name}</span>
-                  <span className="text-muted-foreground">{fmtSize(a.size)}</span>
-                  <span className="ml-auto font-mono text-[10px] uppercase text-muted-foreground">
-                    {a.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={isUser ? "end" : "start"} className="w-48">
+            <DropdownMenuItem onSelect={copy}>
+              <Copy className="size-4" /> Copy
+            </DropdownMenuItem>
+            {isUser && (
+              <DropdownMenuItem onSelect={() => setEditing(true)}>
+                <Pencil className="size-4" /> Edit
+              </DropdownMenuItem>
+            )}
+            {!isUser && (
+              <DropdownMenuItem onSelect={onRegenerate}>
+                <RefreshCw className="size-4" /> Regenerate
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onSelect={() => void share()}>
+              <Share2 className="size-4" /> Share
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onSelect={() => onDelete(message.id)}>
+              <Trash2 className="size-4" /> Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <div
           className={cn(
-            "mt-1 flex items-center gap-1 text-[11px] text-muted-foreground opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100",
+            "mt-1 flex items-center gap-1 px-1 text-[11px] text-muted-foreground",
             isUser && "justify-end",
           )}
         >
-          <span className="mr-1">
+          <span>
             {fmtTime(message.createdAt)}
             {message.edited ? " · edited" : ""}
           </span>
           <button
             type="button"
             aria-label="Copy message"
-            className="rounded p-1 hover:text-foreground"
-            onClick={() => {
-              navigator.clipboard?.writeText(message.content);
-              toast.success("Copied");
-            }}
+            className="rounded p-1 opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+            onClick={copy}
           >
             <Copy className="size-3.5" />
           </button>
-          {isUser && (
-            <button
-              type="button"
-              aria-label="Edit message"
-              className="rounded p-1 hover:text-foreground"
-              onClick={() => setEditing(true)}
-            >
-              <Pencil className="size-3.5" />
-            </button>
-          )}
-          {!isUser && (
-            <button
-              type="button"
-              aria-label="Regenerate response"
-              className="rounded p-1 hover:text-foreground"
-              onClick={onRegenerate}
-            >
-              <RefreshCw className="size-3.5" />
-            </button>
-          )}
           <button
             type="button"
-            aria-label="Delete message"
-            className="rounded p-1 hover:text-destructive"
-            onClick={() => onDelete(message.id)}
+            aria-label="Message actions"
+            className="rounded p-1 opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+            onClick={() => setMenuOpen(true)}
           >
-            <Trash2 className="size-3.5" />
+            <Sparkles className="size-3.5" />
           </button>
         </div>
       </div>
@@ -227,11 +289,22 @@ function MessageRow({
   );
 }
 
-export function ChatSurface({ compact = false }: { compact?: boolean }) {
-  const { state, update, setOrbState } = useMoa();
+export function ChatSurface({
+  compact = false,
+  fill = false,
+  onFocusChange,
+}: {
+  compact?: boolean;
+  /** Fills its parent (used by full-screen chat). */
+  fill?: boolean;
+  /** Fires when the composer gains/loses focus so hosts can shrink the hero. */
+  onFocusChange?: (focused: boolean) => void;
+}) {
+  const { state, update, setOrbState, active } = useMoa();
   const [pending, setPending] = useState<Attachment[]>([]);
   const [thinking, setThinking] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   const conversation: Conversation | undefined =
@@ -258,7 +331,7 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
       c.updatedAt = Date.now();
       if (c.title.startsWith("New conversation")) {
         const first = msgs.find((m) => m.role === "user");
-        if (first) c.title = first.content.slice(0, 42);
+        if (first && first.content) c.title = first.content.slice(0, 42);
       }
       return s;
     });
@@ -275,10 +348,29 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
     appendMessages([userMsg]);
     setPending([]);
     setDraft("");
+
+    if (!active) {
+      appendMessages([
+        {
+          id: uid("m"),
+          role: "system",
+          content:
+            "MOA is dormant. Your message was not processed. Double-tap the orb to activate MOA first.",
+          createdAt: Date.now(),
+          status: "unavailable",
+        },
+      ]);
+      toast.warning("MOA is dormant", { description: "Double-tap the orb to activate." });
+      return;
+    }
     runResponse();
   };
 
   const runResponse = () => {
+    if (!active) {
+      toast.warning("MOA is dormant", { description: "Double-tap the orb to activate." });
+      return;
+    }
     setThinking(true);
     setOrbState("thinking");
     window.setTimeout(() => {
@@ -320,15 +412,22 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
   if (!conversation) return null;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className={cn("flex flex-col", fill ? "h-full min-h-0" : "h-full")}>
       <div
         className={cn(
-          "flex-1 space-y-4 overflow-y-auto pr-1",
-          compact ? "max-h-[46vh]" : "min-h-[45vh]",
+          "flex-1 space-y-3.5 overflow-y-auto pr-1",
+          fill ? "min-h-0" : compact ? "max-h-[46vh]" : "min-h-[30vh]",
         )}
         role="log"
         aria-live="polite"
       >
+        {conversation.messages.length === 0 && (
+          <p className="py-6 text-center text-sm text-muted-foreground">
+            {active
+              ? "MOA is active. Say something."
+              : "MOA is dormant. Double-tap the orb to wake it."}
+          </p>
+        )}
         {conversation.messages.map((m) => (
           <MessageRow
             key={m.id}
@@ -356,7 +455,7 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
         ))}
         {thinking && (
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <Orb size="sm" state="thinking" />
+            <Orb size="xs" state="thinking" showAura={false} />
             <span className="flex items-center gap-1">
               MOA is thinking
               <span className="animate-pulse">…</span>
@@ -390,51 +489,52 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
         </ul>
       )}
 
-      <div className="moa-panel mt-4 p-2">
-        <Textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              send();
-            }
-          }}
-          rows={compact ? 2 : 3}
-          placeholder="Ask MOA anything…"
-          aria-label="Message MOA"
-          className="resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+      {/* Composer: circular + and mic sit outside the text field. */}
+      <div className="mt-3 flex items-end gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          multiple
+          className="sr-only"
+          onChange={(e) => onFiles(e.target.files)}
         />
-        <div className="flex items-center justify-between gap-2 px-1 pb-1">
-          <div className="flex items-center gap-1">
-            <input
-              ref={fileRef}
-              type="file"
-              multiple
-              className="sr-only"
-              onChange={(e) => onFiles(e.target.files)}
-            />
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          onChange={(e) => onFiles(e.target.files)}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
+              variant="secondary"
               size="icon"
-              aria-label="Attach files"
-              onClick={() => fileRef.current?.click()}
+              className="size-10 shrink-0 rounded-full"
+              aria-label="Add attachment or tool"
             >
-              <Paperclip className="size-4" />
+              <Plus className="size-5" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Voice input (not configured)"
-              onClick={() => toast.error("Voice is NOT CONFIGURED", { description: "Connect a speech provider in Settings → Accounts." })}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className="w-52">
+            <DropdownMenuItem onSelect={() => fileRef.current?.click()}>
+              <Paperclip className="size-4" /> Attach file
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => cameraRef.current?.click()}>
+              <Camera className="size-4" /> Camera / photo
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => {
+                const url = window.prompt("Add a link");
+                if (url) setDraft(`${draft}${draft ? "\n" : ""}${url}`);
+              }}
             >
-              <Mic className="size-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Tools and skills"
-              onClick={() =>
+              <Link2 className="size-4" /> Add link
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={() =>
                 appendMessages([
                   {
                     id: uid("m"),
@@ -447,14 +547,52 @@ export function ChatSurface({ compact = false }: { compact?: boolean }) {
                 ])
               }
             >
-              <Wrench className="size-4" />
-            </Button>
-          </div>
-          <Button onClick={send} className="gap-2" disabled={!draft.trim() && pending.length === 0}>
-            Send
-            <CornerDownLeft className="size-3.5" />
+              <Wrench className="size-4" /> Tools & skills
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="flex min-w-0 flex-1 items-end gap-1 rounded-3xl border border-border bg-surface/70 px-3 py-1.5 backdrop-blur">
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onFocus={() => onFocusChange?.(true)}
+            onBlur={() => onFocusChange?.(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            rows={1}
+            placeholder={active ? "Message MOA…" : "MOA is dormant — double-tap the orb"}
+            aria-label="Message MOA"
+            className="max-h-32 min-h-9 resize-none border-0 bg-transparent px-0 py-2 shadow-none focus-visible:ring-0"
+          />
+          <Button
+            onClick={send}
+            size="icon"
+            className="mb-1 size-8 shrink-0 rounded-full"
+            aria-label="Send message"
+            disabled={!draft.trim() && pending.length === 0}
+          >
+            <ArrowUp className="size-4" />
           </Button>
         </div>
+
+        <Button
+          variant="secondary"
+          size="icon"
+          className="size-10 shrink-0 rounded-full"
+          aria-label="Voice input (not configured)"
+          onClick={() =>
+            toast.error("Voice is NOT CONFIGURED", {
+              description: "Connect a speech provider in Settings → Accounts.",
+            })
+          }
+        >
+          <Mic className="size-5" />
+        </Button>
       </div>
     </div>
   );
