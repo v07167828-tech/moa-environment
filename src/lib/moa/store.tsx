@@ -4,11 +4,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { createDefaultState } from "./defaults";
-import type { MoaState, OrbState } from "./types";
+import type { ActivationPhase, MoaState, OrbState } from "./types";
 
 /**
  * Prototype persistence layer.
@@ -40,6 +41,7 @@ function loadState(): MoaState {
       appearance: { ...base.appearance, ...parsed.appearance },
       personality: { ...base.personality, ...parsed.personality },
       model: { ...base.model, ...parsed.model },
+      location: { ...base.location, ...parsed.location },
     };
   } catch {
     return base;
@@ -54,6 +56,13 @@ interface MoaContextValue {
   orbState: OrbState;
   setOrbState: (s: OrbState) => void;
   online: boolean;
+  /** Session-only. MOA always boots dormant; never persisted. */
+  active: boolean;
+  phase: ActivationPhase;
+  toggleActive: () => void;
+  /** Explicit, user-triggered geolocation request. Never called implicitly. */
+  requestLocation: () => Promise<void>;
+  setLocationSharing: (on: boolean) => void;
 }
 
 const MoaContext = createContext<MoaContextValue | null>(null);
@@ -63,6 +72,25 @@ export function MoaProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [orbState, setOrbState] = useState<OrbState>("idle");
   const [online, setOnline] = useState(true);
+  // Activation is deliberately NOT persisted: MOA is dormant on every entry.
+  const [phase, setPhase] = useState<ActivationPhase>("dormant");
+  const watchRef = useRef<number | null>(null);
+
+  const active = phase === "active" || phase === "emerging";
+
+  const toggleActive = useCallback(() => {
+    setPhase((p) => {
+      if (p === "dormant") {
+        window.setTimeout(() => setPhase((cur) => (cur === "emerging" ? "active" : cur)), 900);
+        return "emerging";
+      }
+      if (p === "active" || p === "emerging") {
+        window.setTimeout(() => setPhase((cur) => (cur === "absorbing" ? "dormant" : cur)), 700);
+        return "absorbing";
+      }
+      return p;
+    });
+  }, []);
 
   useEffect(() => {
     setState(loadState());
@@ -97,9 +125,113 @@ export function MoaProvider({ children }: { children: ReactNode }) {
     setState(fresh);
   }, []);
 
+  const setLocationSharing = useCallback(
+    (on: boolean) => {
+      update((s) => {
+        s.location.sharing = on;
+        if (!on) {
+          s.location.last = null;
+          s.location.shareWithPeople = false;
+        }
+        return s;
+      });
+      if (!on && watchRef.current !== null) {
+        navigator.geolocation?.clearWatch(watchRef.current);
+        watchRef.current = null;
+      }
+    },
+    [update],
+  );
+
+  const requestLocation = useCallback(async () => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      update((s) => {
+        s.location.permission = "unsupported";
+        return s;
+      });
+      return;
+    }
+    await new Promise<void>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          update((s) => {
+            s.location.permission = "granted";
+            s.location.sharing = true;
+            s.location.last = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              accuracy: pos.coords.accuracy,
+              at: Date.now(),
+            };
+            return s;
+          });
+          resolve();
+        },
+        () => {
+          update((s) => {
+            s.location.permission = "denied";
+            return s;
+          });
+          resolve();
+        },
+        { enableHighAccuracy: true, timeout: 10_000 },
+      );
+    });
+  }, [update]);
+
+  // Live updates only while the user keeps sharing switched on.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!state.location.sharing || typeof navigator === "undefined" || !navigator.geolocation) return;
+    const id = navigator.geolocation.watchPosition(
+      (pos) =>
+        update((s) => {
+          s.location.last = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+            at: Date.now(),
+          };
+          return s;
+        }),
+      () => undefined,
+      { enableHighAccuracy: true, maximumAge: 15_000 },
+    );
+    watchRef.current = id;
+    return () => {
+      navigator.geolocation.clearWatch(id);
+      watchRef.current = null;
+    };
+  }, [hydrated, state.location.sharing, update]);
+
   const value = useMemo<MoaContextValue>(
-    () => ({ state, hydrated, update, reset, orbState, setOrbState, online }),
-    [state, hydrated, update, reset, orbState, online],
+    () => ({
+      state,
+      hydrated,
+      update,
+      reset,
+      orbState,
+      setOrbState,
+      online,
+      active,
+      phase,
+      toggleActive,
+      requestLocation,
+      setLocationSharing,
+    }),
+    [
+      state,
+      hydrated,
+      update,
+      reset,
+      orbState,
+      online,
+      active,
+      phase,
+      toggleActive,
+      requestLocation,
+      setLocationSharing,
+    ],
   );
 
   return <MoaContext.Provider value={value}>{children}</MoaContext.Provider>;
