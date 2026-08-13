@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Bell,
@@ -8,6 +8,7 @@ import {
   Globe,
   Hammer,
   Hash,
+  Image as ImageIcon,
   LayoutDashboard,
   Library,
   ListChecks,
@@ -17,36 +18,40 @@ import {
   MessageSquare,
   Mic,
   MonitorSmartphone,
+  Palette,
   Radio,
   Settings,
   ShieldCheck,
   Sparkles,
+  UserRound,
   WifiOff,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMoa } from "@/lib/moa/store";
 import { Orb, ORB_STATE_LABEL } from "./Orb";
 import { AppearanceLayer } from "./AppearanceLayer";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const NAV: { group: string; items: { to: string; label: string; icon: typeof Brain }[] }[] = [
   {
-    group: "MOA",
+    group: "Core",
     items: [
       { to: "/", label: "Home", icon: Sparkles },
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { to: "/chat", label: "Conversations", icon: MessageSquare },
-    ],
-  },
-  {
-    group: "Mind",
-    items: [
+      { to: "/chat", label: "Chats", icon: MessageSquare },
       { to: "/memory", label: "Memory", icon: Brain },
       { to: "/knowledge", label: "Knowledge", icon: Library },
       { to: "/files", label: "Files", icon: FolderOpen },
+    ],
+  },
+  {
+    group: "Work",
+    items: [
       { to: "/planner", label: "Planner", icon: ListChecks },
+      { to: "/builder", label: "Projects", icon: Hammer },
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ],
   },
   {
@@ -63,30 +68,21 @@ const NAV: { group: string; items: { to: string; label: string; icon: typeof Bra
     ],
   },
   {
-    group: "Build",
-    items: [{ to: "/builder", label: "Builder", icon: Hammer }],
-  },
-  {
     group: "Control",
     items: [
       { to: "/permissions", label: "Permissions", icon: ShieldCheck },
       { to: "/devices", label: "Devices", icon: MonitorSmartphone },
       { to: "/settings", label: "Settings", icon: Settings },
+      { to: "/settings/identity", label: "Identity", icon: UserRound },
+      { to: "/settings/appearance", label: "Appearance", icon: Palette },
+      { to: "/settings/accounts", label: "Accounts", icon: ImageIcon },
     ],
   },
 ];
 
-const MOBILE_TABS = [
-  { to: "/", label: "MOA", icon: Sparkles },
-  { to: "/chat", label: "Chats", icon: MessageSquare },
-  { to: "/skills", label: "Skills", icon: LayoutDashboard },
-  { to: "/builder", label: "Builder", icon: Hammer },
-  { to: "/settings", label: "Settings", icon: Settings },
-];
-
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <nav className="space-y-5 pb-6" aria-label="MOA sections">
+    <nav className="space-y-5 pb-10" aria-label="MOA sections">
       {NAV.map((group) => (
         <div key={group.group}>
           <p className="mb-1.5 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -98,8 +94,8 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                 <Link
                   to={item.to}
                   onClick={onNavigate}
-                  activeOptions={{ exact: item.to === "/" }}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground"
+                  activeOptions={{ exact: item.to === "/" || item.to === "/settings" }}
+                  className="flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground"
                   activeProps={{ className: "font-medium" }}
                 >
                   <item.icon className="size-4 shrink-0" aria-hidden />
@@ -115,14 +111,17 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function StatusPill() {
-  const { orbState, online } = useMoa();
-  const label = online ? ORB_STATE_LABEL[orbState] : "Offline";
+  const { orbState, online, active } = useMoa();
+  const label = !online ? "Offline" : !active ? "Dormant" : ORB_STATE_LABEL[orbState];
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-      {online ? (
-        <span className="size-1.5 rounded-full bg-primary" aria-hidden />
-      ) : (
+      {!online ? (
         <WifiOff className="size-3" aria-hidden />
+      ) : (
+        <span
+          className={cn("size-1.5 rounded-full", active ? "bg-primary" : "bg-muted-foreground/60")}
+          aria-hidden
+        />
       )}
       {label}
     </span>
@@ -134,14 +133,30 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { state } = useMoa();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  // Full-screen chat renders its own chrome.
+  const bare = pathname.startsWith("/chat/full");
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  if (bare) {
+    return (
+      <div className="relative min-h-[100dvh]">
+        <AppearanceLayer />
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-[100dvh]">
       <AppearanceLayer />
 
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar/80 backdrop-blur-xl lg:flex">
         <Link to="/" className="flex items-center gap-3 px-5 py-5">
-          <Orb size="sm" />
+          <Orb size="sm" showAura={false} />
           <span className="font-display text-lg font-semibold tracking-tight">
             {state.identity.name}
           </span>
@@ -168,36 +183,27 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Top bar */}
-      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border/60 bg-background/60 px-4 py-3 backdrop-blur-xl lg:pl-[17.5rem]">
-        <div className="flex items-center gap-2">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">
-                <Menu className="size-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <SheetTitle className="flex items-center gap-3 px-5 py-4 text-base">
-                <Orb size="sm" />
-                {state.identity.name}
-              </SheetTitle>
-              <ScrollArea className="h-[calc(100dvh-4rem)] px-2">
-                <NavList onNavigate={() => setOpen(false)} />
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-          <div className="lg:hidden">
-            <Orb size="sm" />
-          </div>
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border/40 bg-background/50 px-3 py-2.5 backdrop-blur-xl sm:px-4 lg:pl-[17.5rem]">
+        <div className="flex min-w-0 items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full lg:hidden"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </Button>
           <StatusPill />
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label="Notifications" asChild>
+          <Button variant="ghost" size="icon" className="rounded-full" aria-label="Notifications" asChild>
             <Link to="/dashboard">
               <Bell className="size-4" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Settings" asChild>
+          <Button variant="ghost" size="icon" className="rounded-full" aria-label="Settings" asChild>
             <Link to="/settings">
               <Settings className="size-4" />
             </Link>
@@ -205,32 +211,21 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="px-4 pb-28 pt-5 sm:px-6 lg:pb-10 lg:pl-[17.5rem] lg:pr-6">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" className="w-[19rem] p-0">
+          <SheetTitle className="flex items-center gap-3 px-5 py-4 text-base">
+            <Orb size="sm" showAura={false} />
+            {state.identity.name}
+          </SheetTitle>
+          <ScrollArea className="h-[calc(100dvh-4rem)] px-2">
+            <NavList onNavigate={() => setOpen(false)} />
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+
+      <main className="px-4 pb-10 pt-4 sm:px-6 lg:pl-[17.5rem] lg:pr-6">
         <div className="mx-auto w-full max-w-6xl">{children}</div>
       </main>
-
-      {/* Mobile tab bar */}
-      <nav
-        aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-border/60 bg-background/85 backdrop-blur-xl lg:hidden"
-      >
-        {MOBILE_TABS.map((tab) => {
-          const active = tab.to === "/" ? pathname === "/" : pathname.startsWith(tab.to);
-          return (
-            <Link
-              key={tab.to}
-              to={tab.to}
-              className={cn(
-                "flex min-h-14 flex-1 flex-col items-center justify-center gap-1 py-2 text-[11px]",
-                active ? "text-primary" : "text-muted-foreground",
-              )}
-            >
-              <tab.icon className="size-5" aria-hidden />
-              {tab.label}
-            </Link>
-          );
-        })}
-      </nav>
     </div>
   );
 }
