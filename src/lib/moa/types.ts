@@ -6,7 +6,25 @@ export type CapabilityStatus =
   | "PLANNED"
   | "PROTOTYPE";
 
-export type OrbState = "idle" | "listening" | "thinking" | "speaking" | "error" | "offline";
+export type OrbState =
+  | "dormant"
+  | "idle"
+  | "listening"
+  | "thinking"
+  | "speaking"
+  | "error"
+  | "offline";
+
+export type ActivationPhase = "dormant" | "emerging" | "active" | "absorbing";
+
+export interface LocationState {
+  /** User-controlled: nothing is read from the device unless this is true. */
+  sharing: boolean;
+  permission: "unknown" | "prompt" | "granted" | "denied" | "unsupported";
+  last: { lat: number; lng: number; accuracy: number; at: number } | null;
+  /** Opt-in visibility of your live position to other MOA users. */
+  shareWithPeople: boolean;
+}
 
 export type MessageRole = "user" | "moa" | "tool" | "system";
 
@@ -225,5 +243,6 @@ export interface MoaState {
     activeId: string;
     autoRouting: boolean;
   };
+  location: LocationState;
   lookups: { id: string; number: string; at: number; result: string }[];
 }

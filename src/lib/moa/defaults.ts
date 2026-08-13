@@ -283,6 +283,7 @@ export function createDefaultState(): MoaState {
     ],
     skills: SKILLS.map((s) => ({ id: s.id, enabled: s.status !== "PLANNED" })),
     model: { activeId: "moa-general", autoRouting: false },
+    location: { sharing: false, permission: "unknown", last: null, shareWithPeople: false },
     lookups: [],
   };
 }
