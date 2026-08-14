@@ -495,134 +495,139 @@ export function ChatSurface({
         <div ref={endRef} />
       </div>
 
-      {pending.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {pending.map((a) => (
-            <li
-              key={a.id}
-              className="flex items-center gap-2 rounded-lg border border-border bg-surface/60 px-2.5 py-1.5 text-xs"
-            >
-              <FileText className="size-3.5" aria-hidden />
-              <span className="max-w-[9rem] truncate">{a.name}</span>
-              <span className="font-mono text-[10px] uppercase text-muted-foreground">
-                {a.status}
-              </span>
-              <button
-                type="button"
-                aria-label={`Remove ${a.name}`}
-                onClick={() => setPending((p) => p.filter((x) => x.id !== a.id))}
+      {/* Composer — anchored at the bottom safe area; the log above scrolls. */}
+      <div className="shrink-0 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        {pending.length > 0 && (
+          <ul className="mb-2 flex flex-wrap gap-2">
+            {pending.map((a) => (
+              <li
+                key={a.id}
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface/60 px-2.5 py-1.5 text-xs"
               >
-                <X className="size-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+                <FileText className="size-3.5" aria-hidden />
+                <span className="max-w-[9rem] truncate">{a.name}</span>
+                <span className="font-mono text-[10px] uppercase text-muted-foreground">
+                  {a.status}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`Remove ${a.name}`}
+                  onClick={() => setPending((p) => p.filter((x) => x.id !== a.id))}
+                >
+                  <X className="size-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
 
-      {/* Composer: circular + and mic sit outside the text field. */}
-      <div className="mt-3 flex items-end gap-2">
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          className="sr-only"
-          onChange={(e) => onFiles(e.target.files)}
-        />
-        <input
-          ref={cameraRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="sr-only"
-          onChange={(e) => onFiles(e.target.files)}
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <div className="flex items-end gap-2">
+          <input
+            ref={fileRef}
+            type="file"
+            multiple
+            className="sr-only"
+            onChange={(e) => onFiles(e.target.files)}
+          />
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="sr-only"
+            onChange={(e) => onFiles(e.target.files)}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="size-11 shrink-0 rounded-full"
+                aria-label="Add attachment or tool"
+              >
+                <Plus className="size-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className="w-52">
+              <DropdownMenuItem onSelect={() => fileRef.current?.click()}>
+                <Paperclip className="size-4" /> Attach file
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => cameraRef.current?.click()}>
+                <Camera className="size-4" /> Camera / photo
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const url = window.prompt("Add a link");
+                  if (url) setDraft(`${draft}${draft ? "\n" : ""}${url}`);
+                }}
+              >
+                <Link2 className="size-4" /> Add link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() =>
+                  appendMessages([
+                    {
+                      id: uid("m"),
+                      role: "tool",
+                      content: "Tool invocation requested — no tool runtime connected.",
+                      toolName: "tool.router",
+                      createdAt: Date.now(),
+                      status: "unavailable",
+                    },
+                  ])
+                }
+              >
+                <Wrench className="size-4" /> Tools & skills
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="flex min-w-0 flex-1 items-end rounded-[1.6rem] border border-border bg-surface/70 px-4 py-2 backdrop-blur">
+            <Textarea
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onFocus={() => onFocusChange?.(true)}
+              onBlur={() => onFocusChange?.(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  send();
+                }
+              }}
+              rows={1}
+              placeholder={active ? "Message MOA…" : "MOA is dormant — double-tap the orb"}
+              aria-label="Message MOA"
+              className="max-h-44 min-h-[2.75rem] resize-none border-0 bg-transparent px-0 py-2 text-base leading-relaxed shadow-none focus-visible:ring-0"
+            />
+          </div>
+
+          {/* Empty input → microphone. One character typed → send. */}
+          {canSend ? (
+            <Button
+              onClick={send}
+              size="icon"
+              className="size-11 shrink-0 rounded-full"
+              aria-label="Send message"
+            >
+              <ArrowUp className="size-5" />
+            </Button>
+          ) : (
             <Button
               variant="secondary"
               size="icon"
-              className="size-10 shrink-0 rounded-full"
-              aria-label="Add attachment or tool"
+              className="size-11 shrink-0 rounded-full"
+              aria-label="Voice input (not configured)"
+              onClick={() =>
+                toast.error("Voice is NOT CONFIGURED", {
+                  description: "Connect a speech provider in Settings → Accounts.",
+                })
+              }
             >
-              <Plus className="size-5" />
+              <Mic className="size-5" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="top" className="w-52">
-            <DropdownMenuItem onSelect={() => fileRef.current?.click()}>
-              <Paperclip className="size-4" /> Attach file
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => cameraRef.current?.click()}>
-              <Camera className="size-4" /> Camera / photo
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => {
-                const url = window.prompt("Add a link");
-                if (url) setDraft(`${draft}${draft ? "\n" : ""}${url}`);
-              }}
-            >
-              <Link2 className="size-4" /> Add link
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={() =>
-                appendMessages([
-                  {
-                    id: uid("m"),
-                    role: "tool",
-                    content: "Tool invocation requested — no tool runtime connected.",
-                    toolName: "tool.router",
-                    createdAt: Date.now(),
-                    status: "unavailable",
-                  },
-                ])
-              }
-            >
-              <Wrench className="size-4" /> Tools & skills
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <div className="flex min-w-0 flex-1 items-end gap-1 rounded-3xl border border-border bg-surface/70 px-3 py-1.5 backdrop-blur">
-          <Textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onFocus={() => onFocusChange?.(true)}
-            onBlur={() => onFocusChange?.(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
-            }}
-            rows={1}
-            placeholder={active ? "Message MOA…" : "MOA is dormant — double-tap the orb"}
-            aria-label="Message MOA"
-            className="max-h-32 min-h-9 resize-none border-0 bg-transparent px-0 py-2 shadow-none focus-visible:ring-0"
-          />
-          <Button
-            onClick={send}
-            size="icon"
-            className="mb-1 size-8 shrink-0 rounded-full"
-            aria-label="Send message"
-            disabled={!draft.trim() && pending.length === 0}
-          >
-            <ArrowUp className="size-4" />
-          </Button>
+          )}
         </div>
-
-        <Button
-          variant="secondary"
-          size="icon"
-          className="size-10 shrink-0 rounded-full"
-          aria-label="Voice input (not configured)"
-          onClick={() =>
-            toast.error("Voice is NOT CONFIGURED", {
-              description: "Connect a speech provider in Settings → Accounts.",
-            })
-          }
-        >
-          <Mic className="size-5" />
-        </Button>
       </div>
     </div>
   );
