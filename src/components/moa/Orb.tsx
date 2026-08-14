@@ -1,7 +1,8 @@
-import { useRef, type CSSProperties } from "react";
+import { useMemo, useRef, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import type { OrbState } from "@/lib/moa/types";
 import { useMoa } from "@/lib/moa/store";
+import { OrbEnergy } from "./OrbEnergy";
 
 const SIZES = { xs: 28, sm: 36, md: 64, lg: 132, xl: 188 } as const;
 
