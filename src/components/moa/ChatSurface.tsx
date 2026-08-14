@@ -442,11 +442,11 @@ export function ChatSurface({
   if (!conversation) return null;
 
   return (
-    <div className={cn("flex flex-col", fill ? "h-full min-h-0" : "h-full")}>
+    <div className="flex h-full min-h-0 flex-col">
       <div
         className={cn(
-          "flex-1 space-y-3.5 overflow-y-auto pr-1",
-          fill ? "min-h-0" : compact ? "max-h-[46vh]" : "min-h-[30vh]",
+          "min-h-0 flex-1 space-y-3.5 overflow-y-auto overscroll-contain pr-1",
+          !fill && compact && "max-h-[46vh]",
         )}
         role="log"
         aria-live="polite"
