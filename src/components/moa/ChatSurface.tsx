@@ -94,6 +94,34 @@ function MessageBody({ content }: { content: string }) {
   );
 }
 
+function ActionButton({
+  label,
+  icon: Icon,
+  onClick,
+  destructive = false,
+}: {
+  label: string;
+  icon: typeof Copy;
+  onClick: () => void;
+  destructive?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={cn(
+        "inline-flex min-h-8 items-center gap-1 rounded-full border border-border/60 bg-surface/50 px-2.5 py-1 text-[11px] transition-colors hover:bg-accent hover:text-accent-foreground",
+        destructive && "hover:border-destructive/50 hover:bg-destructive/15 hover:text-destructive",
+      )}
+    >
+      <Icon className="size-3.5" aria-hidden />
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
 function MessageRow({
   message,
   onEdit,
