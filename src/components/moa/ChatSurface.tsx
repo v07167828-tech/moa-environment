@@ -441,6 +441,8 @@ export function ChatSurface({
 
   if (!conversation) return null;
 
+  const canSend = draft.trim().length > 0 || pending.length > 0;
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div
