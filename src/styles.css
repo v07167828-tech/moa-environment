@@ -293,3 +293,41 @@
     opacity: 0;
   }
 }
+
+@keyframes moa-vein-flicker {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  17% {
+    opacity: 0.35;
+  }
+  38% {
+    opacity: 1;
+  }
+  56% {
+    opacity: 0.5;
+  }
+  74% {
+    opacity: 0.92;
+  }
+}
+
+@keyframes moa-vein-travel {
+  to {
+    stroke-dashoffset: -400;
+  }
+}
+
+@keyframes moa-plasma-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6px, -5px, 0) scale(1.18);
+  }
+  66% {
+    transform: translate3d(-5px, 4px, 0) scale(0.86);
+  }
+}
