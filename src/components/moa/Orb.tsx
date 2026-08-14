@@ -126,6 +126,20 @@ export function Orb({
   const dormant = resolved === "dormant" || resolved === "offline";
   const hasPicture = identity.mode === "picture" && !!identity.pictureUrl;
 
+  // Energy settles/absorbs when dormant and surges while listening/speaking.
+  const energy = dormant
+    ? 0.08
+    : resolved === "speaking" || resolved === "listening"
+      ? 1
+      : resolved === "thinking"
+        ? 0.9
+        : 0.65;
+  const energySeed = useMemo(
+    () => Math.abs([...identity.name].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)) % 9973,
+    [identity.name],
+  );
+
+
   const onTap = () => {
     if (!interactive) return;
     const now = Date.now();
