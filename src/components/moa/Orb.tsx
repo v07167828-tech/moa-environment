@@ -1,7 +1,8 @@
-import { useRef, type CSSProperties } from "react";
+import { useMemo, useRef, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import type { OrbState } from "@/lib/moa/types";
 import { useMoa } from "@/lib/moa/store";
+import { OrbEnergy } from "./OrbEnergy";
 
 const SIZES = { xs: 28, sm: 36, md: 64, lg: 132, xl: 188 } as const;
 
@@ -125,6 +126,20 @@ export function Orb({
   const dormant = resolved === "dormant" || resolved === "offline";
   const hasPicture = identity.mode === "picture" && !!identity.pictureUrl;
 
+  // Energy settles/absorbs when dormant and surges while listening/speaking.
+  const energy = dormant
+    ? 0.08
+    : resolved === "speaking" || resolved === "listening"
+      ? 1
+      : resolved === "thinking"
+        ? 0.9
+        : 0.65;
+  const energySeed = useMemo(
+    () => Math.abs([...identity.name].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)) % 9973,
+    [identity.name],
+  );
+
+
   const onTap = () => {
     if (!interactive) return;
     const now = Date.now();
@@ -176,7 +191,7 @@ export function Orb({
         style={{
           borderRadius: radius,
           background: "var(--gradient-orb)",
-          filter: dormant ? "saturate(0.25) brightness(0.62)" : undefined,
+          filter: dormant ? "saturate(0.3) brightness(0.6)" : undefined,
         }}
       >
         {hasPicture ? (
@@ -196,7 +211,8 @@ export function Orb({
                 }}
               />
             </span>
-            {/* Depth only at the rim, so the face is never obscured. */}
+            {/* Energy stays subtle over an avatar so the face is never hidden. */}
+            <OrbEnergy seed={energySeed} energy={energy} animate={animate} subtle />
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0"
@@ -208,27 +224,7 @@ export function Orb({
             />
           </>
         ) : (
-          <>
-            <span
-              aria-hidden
-              className="absolute inset-0 opacity-70 mix-blend-screen"
-              style={{
-                background:
-                  "conic-gradient(from 210deg, transparent, color-mix(in oklab, var(--color-primary) 45%, transparent), transparent 65%)",
-                animation: animate && !dormant ? "moa-spin-slow 18s linear infinite" : undefined,
-              }}
-            />
-            <span
-              aria-hidden
-              className="absolute left-[18%] top-[14%] h-[22%] w-[30%] rounded-full bg-background/40 blur-md"
-            />
-          </>
-        )}
-        {resolved === "thinking" && animate && !hasPicture && (
-          <span
-            aria-hidden
-            className="absolute inset-[14%] rounded-full border border-dashed border-primary-foreground/40"
-          />
+          <OrbEnergy seed={energySeed} energy={energy} animate={animate} />
         )}
       </div>
     </Wrapper>
