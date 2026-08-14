@@ -260,32 +260,31 @@ function MessageRow({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        {/* Always-visible action row — long-press stays as an extra shortcut. */}
         <div
           className={cn(
-            "mt-1 flex items-center gap-1 px-1 text-[11px] text-muted-foreground",
+            "mt-1.5 flex flex-wrap items-center gap-1 px-0.5 text-[11px] text-muted-foreground",
             isUser && "justify-end",
           )}
         >
-          <span>
+          <ActionButton label="Copy" icon={Copy} onClick={copy} />
+          <ActionButton label="Share" icon={Share2} onClick={() => void share()} />
+          {isUser && (
+            <ActionButton label="Edit" icon={Pencil} onClick={() => setEditing(true)} />
+          )}
+          {!isUser && (
+            <ActionButton label="Regenerate" icon={RefreshCw} onClick={onRegenerate} />
+          )}
+          <ActionButton
+            label="Delete"
+            icon={Trash2}
+            destructive
+            onClick={() => onDelete(message.id)}
+          />
+          <span className="ml-1 whitespace-nowrap">
             {fmtTime(message.createdAt)}
             {message.edited ? " · edited" : ""}
           </span>
-          <button
-            type="button"
-            aria-label="Copy message"
-            className="rounded p-1 opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
-            onClick={copy}
-          >
-            <Copy className="size-3.5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Message actions"
-            className="rounded p-1 opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
-            onClick={() => setMenuOpen(true)}
-          >
-            <Sparkles className="size-3.5" />
-          </button>
         </div>
       </div>
     </div>
