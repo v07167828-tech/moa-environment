@@ -29,6 +29,7 @@ import { Route as VoiceRouteImport } from './routes/voice'
 import { Route as WebRouteImport } from './routes/web'
 import { Route as BuilderIndexRouteImport } from './routes/builder.index'
 import { Route as BuilderProjectIdRouteImport } from './routes/builder.$projectId'
+import { Route as ChatFullRouteImport } from './routes/chat.full'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsAccountsRouteImport } from './routes/settings.accounts'
 import { Route as SettingsAppearanceRouteImport } from './routes/settings.appearance'
@@ -136,6 +137,11 @@ const BuilderProjectIdRoute = BuilderProjectIdRouteImport.update({
   path: '/builder/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatFullRoute = ChatFullRouteImport.update({
+  id: '/full',
+  path: '/full',
+  getParentRoute: () => ChatRoute,
+} as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -169,7 +175,7 @@ const SettingsPersonalityRoute = SettingsPersonalityRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/chat': typeof ChatRouteWithChildren
   '/code': typeof CodeRoute
   '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/chat/full': typeof ChatFullRoute
   '/settings/accounts': typeof SettingsAccountsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/identity': typeof SettingsIdentityRoute
@@ -197,7 +204,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/chat': typeof ChatRouteWithChildren
   '/code': typeof CodeRoute
   '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/chat/full': typeof ChatFullRoute
   '/settings/accounts': typeof SettingsAccountsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/identity': typeof SettingsIdentityRoute
@@ -225,7 +233,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/chat': typeof ChatRouteWithChildren
   '/code': typeof CodeRoute
   '/communications': typeof CommunicationsRoute
   '/dashboard': typeof DashboardRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
   '/builder/$projectId': typeof BuilderProjectIdRoute
+  '/chat/full': typeof ChatFullRoute
   '/settings/accounts': typeof SettingsAccountsRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/identity': typeof SettingsIdentityRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/chat/full'
     | '/settings/accounts'
     | '/settings/appearance'
     | '/settings/identity'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/chat/full'
     | '/settings/accounts'
     | '/settings/appearance'
     | '/settings/identity'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/voice'
     | '/web'
     | '/builder/$projectId'
+    | '/chat/full'
     | '/settings/accounts'
     | '/settings/appearance'
     | '/settings/identity'
@@ -339,7 +351,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ChatRoute: typeof ChatRoute
+  ChatRoute: typeof ChatRouteWithChildren
   CodeRoute: typeof CodeRoute
   CommunicationsRoute: typeof CommunicationsRoute
   DashboardRoute: typeof DashboardRoute
@@ -502,6 +514,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuilderProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat/full': {
+      id: '/chat/full'
+      path: '/full'
+      fullPath: '/chat/full'
+      preLoaderRoute: typeof ChatFullRouteImport
+      parentRoute: typeof ChatRoute
+    }
     '/settings/': {
       id: '/settings/'
       path: '/'
@@ -547,6 +566,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ChatRouteChildren {
+  ChatFullRoute: typeof ChatFullRoute
+}
+
+const ChatRouteChildren: ChatRouteChildren = {
+  ChatFullRoute: ChatFullRoute,
+}
+
+const ChatRouteWithChildren = ChatRoute._addFileChildren(ChatRouteChildren)
+
 interface SettingsRouteChildren {
   SettingsAccountsRoute: typeof SettingsAccountsRoute
   SettingsAppearanceRoute: typeof SettingsAppearanceRoute
@@ -571,7 +600,7 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ChatRoute: ChatRoute,
+  ChatRoute: ChatRouteWithChildren,
   CodeRoute: CodeRoute,
   CommunicationsRoute: CommunicationsRoute,
   DashboardRoute: DashboardRoute,
