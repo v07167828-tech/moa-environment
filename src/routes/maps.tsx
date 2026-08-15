@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LocateFixed, MapPin, ShieldAlert, Users } from "lucide-react";
-import { createFileRoute as _unused } from "@tanstack/react-router";
 import { PageHeader } from "@/components/moa/PageHeader";
 import { NotConfigured, StatusBadge } from "@/components/moa/Status";
 import { skillById } from "@/lib/moa/catalog";
