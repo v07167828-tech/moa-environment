@@ -56,6 +56,7 @@ export interface Conversation {
   updatedAt: number;
   messages: Message[];
   draft?: string;
+  archived?: boolean;
 }
 
 export interface MemoryItem {
