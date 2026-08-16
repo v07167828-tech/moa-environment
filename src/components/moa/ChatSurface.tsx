@@ -452,6 +452,53 @@ export function ChatSurface({
     }, 1200);
   };
 
+  // WhatsApp-style voice message: record → cancel or send. The captured audio
+  // is attached locally; transcription still needs a speech provider.
+  const startRecording = async () => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      toast.error("Recording unavailable", { description: "This device has no microphone access." });
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      chunksRef.current = [];
+      cancelledRef.current = false;
+      rec.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        if (cancelledRef.current) return;
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        setPending((p) => [
+          ...p,
+          {
+            id: uid("att"),
+            name: `voice-message-${new Date().toISOString().slice(11, 19)}.webm`,
+            size: blob.size,
+            kind: "audio",
+            status: "unavailable",
+            note: "No speech provider connected — audio stored locally only",
+          },
+        ]);
+        toast.success("Voice message attached");
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setRecording(true);
+    } catch {
+      toast.error("Microphone permission denied");
+    }
+  };
+
+  const stopRecording = (cancel: boolean) => {
+    cancelledRef.current = cancel;
+    recorderRef.current?.stop();
+    recorderRef.current = null;
+    setRecording(false);
+    if (cancel) toast.info("Voice message discarded");
+  };
+
+
   if (!conversation) return null;
 
   const canSend = draft.trim().length > 0 || pending.length > 0;
