@@ -713,15 +713,12 @@ export function ChatSurface({
               variant="secondary"
               size="icon"
               className="size-11 shrink-0 rounded-full"
-              aria-label="Voice input (not configured)"
-              onClick={() =>
-                toast.error("Voice is NOT CONFIGURED", {
-                  description: "Connect a speech provider in Settings → Accounts.",
-                })
-              }
+              aria-label="Record voice message"
+              onClick={() => void startRecording()}
             >
               <Mic className="size-5" />
             </Button>
+
           )}
         </div>
         )}
