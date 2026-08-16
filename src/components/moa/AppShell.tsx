@@ -114,7 +114,7 @@ function StatusPill() {
   const { orbState, online, active } = useMoa();
   const label = !online ? "Offline" : !active ? "Dormant" : ORB_STATE_LABEL[orbState];
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
       {!online ? (
         <WifiOff className="size-3" aria-hidden />
       ) : (
@@ -127,6 +127,7 @@ function StatusPill() {
     </span>
   );
 }
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -183,12 +184,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Top bar */}
-      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border/40 bg-background/50 px-3 py-2.5 backdrop-blur-xl sm:px-4 lg:pl-[17.5rem]">
+      <header className="sticky top-0 z-20 flex items-center justify-between gap-3 bg-transparent px-3 py-2.5 sm:px-4 lg:pl-[17.5rem]">
         <div className="flex min-w-0 items-center gap-2">
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
-            className="rounded-full lg:hidden"
+            className="size-11 shrink-0 rounded-full lg:hidden"
             aria-label={open ? "Close navigation" : "Open navigation"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
@@ -197,6 +198,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Button>
           <StatusPill />
         </div>
+
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="rounded-full" aria-label="Notifications" asChild>
             <Link to="/dashboard">
@@ -223,9 +225,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      <main className="px-4 pb-10 pt-4 sm:px-6 lg:pl-[17.5rem] lg:pr-6">
-        <div className="mx-auto w-full max-w-6xl">{children}</div>
+      <main className="flex h-[calc(100dvh-4rem)] min-h-0 flex-col px-4 pb-[max(0.25rem,env(safe-area-inset-bottom))] pt-1 sm:px-6 lg:pl-[17.5rem] lg:pr-6">
+        <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col overflow-y-auto">
+          {children}
+        </div>
       </main>
+
     </div>
   );
 }

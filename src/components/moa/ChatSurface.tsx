@@ -333,6 +333,11 @@ export function ChatSurface({
   const { state, update, setOrbState, active } = useMoa();
   const [pending, setPending] = useState<Attachment[]>([]);
   const [thinking, setThinking] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const cancelledRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -341,6 +346,14 @@ export function ChatSurface({
     state.conversations.find((c) => c.id === state.activeConversationId) ?? state.conversations[0];
 
   const draft = conversation?.draft ?? "";
+
+  useEffect(() => {
+    if (!recording) return;
+    setSeconds(0);
+    const t = window.setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => window.clearInterval(t);
+  }, [recording]);
+
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -439,6 +452,53 @@ export function ChatSurface({
     }, 1200);
   };
 
+  // WhatsApp-style voice message: record → cancel or send. The captured audio
+  // is attached locally; transcription still needs a speech provider.
+  const startRecording = async () => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      toast.error("Recording unavailable", { description: "This device has no microphone access." });
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      chunksRef.current = [];
+      cancelledRef.current = false;
+      rec.ondataavailable = (e) => e.data.size && chunksRef.current.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        if (cancelledRef.current) return;
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        setPending((p) => [
+          ...p,
+          {
+            id: uid("att"),
+            name: `voice-message-${new Date().toISOString().slice(11, 19)}.webm`,
+            size: blob.size,
+            kind: "audio",
+            status: "unavailable",
+            note: "No speech provider connected — audio stored locally only",
+          },
+        ]);
+        toast.success("Voice message attached");
+      };
+      recorderRef.current = rec;
+      rec.start();
+      setRecording(true);
+    } catch {
+      toast.error("Microphone permission denied");
+    }
+  };
+
+  const stopRecording = (cancel: boolean) => {
+    cancelledRef.current = cancel;
+    recorderRef.current?.stop();
+    recorderRef.current = null;
+    setRecording(false);
+    if (cancel) toast.info("Voice message discarded");
+  };
+
+
   if (!conversation) return null;
 
   const canSend = draft.trim().length > 0 || pending.length > 0;
@@ -523,7 +583,37 @@ export function ChatSurface({
           </ul>
         )}
 
+        {recording ? (
+          <div className="flex items-center gap-3 rounded-[1.6rem] border border-destructive/40 bg-surface/70 px-4 py-2.5 backdrop-blur">
+            <span className="size-2.5 animate-pulse rounded-full bg-destructive" aria-hidden />
+            <span className="font-mono text-sm tabular-nums">
+              {String(Math.floor(seconds / 60)).padStart(2, "0")}:
+              {String(seconds % 60).padStart(2, "0")}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+              Recording voice message…
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-10 shrink-0 rounded-full"
+              aria-label="Cancel voice message"
+              onClick={() => stopRecording(true)}
+            >
+              <Trash2 className="size-5" />
+            </Button>
+            <Button
+              size="icon"
+              className="size-10 shrink-0 rounded-full"
+              aria-label="Send voice message"
+              onClick={() => stopRecording(false)}
+            >
+              <ArrowUp className="size-5" />
+            </Button>
+          </div>
+        ) : (
         <div className="flex items-end gap-2">
+
           <input
             ref={fileRef}
             type="file"
@@ -565,7 +655,11 @@ export function ChatSurface({
               >
                 <Link2 className="size-4" /> Add link
               </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void startRecording()}>
+                <Mic className="size-4" /> Voice message
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 onSelect={() =>
                   appendMessages([
@@ -619,18 +713,17 @@ export function ChatSurface({
               variant="secondary"
               size="icon"
               className="size-11 shrink-0 rounded-full"
-              aria-label="Voice input (not configured)"
-              onClick={() =>
-                toast.error("Voice is NOT CONFIGURED", {
-                  description: "Connect a speech provider in Settings → Accounts.",
-                })
-              }
+              aria-label="Record voice message"
+              onClick={() => void startRecording()}
             >
               <Mic className="size-5" />
             </Button>
+
           )}
         </div>
+        )}
       </div>
+
     </div>
   );
 }
