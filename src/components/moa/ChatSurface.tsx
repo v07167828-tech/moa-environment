@@ -333,6 +333,11 @@ export function ChatSurface({
   const { state, update, setOrbState, active } = useMoa();
   const [pending, setPending] = useState<Attachment[]>([]);
   const [thinking, setThinking] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const cancelledRef = useRef(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -341,6 +346,14 @@ export function ChatSurface({
     state.conversations.find((c) => c.id === state.activeConversationId) ?? state.conversations[0];
 
   const draft = conversation?.draft ?? "";
+
+  useEffect(() => {
+    if (!recording) return;
+    setSeconds(0);
+    const t = window.setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => window.clearInterval(t);
+  }, [recording]);
+
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
