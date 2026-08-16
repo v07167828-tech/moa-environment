@@ -583,7 +583,37 @@ export function ChatSurface({
           </ul>
         )}
 
+        {recording ? (
+          <div className="flex items-center gap-3 rounded-[1.6rem] border border-destructive/40 bg-surface/70 px-4 py-2.5 backdrop-blur">
+            <span className="size-2.5 animate-pulse rounded-full bg-destructive" aria-hidden />
+            <span className="font-mono text-sm tabular-nums">
+              {String(Math.floor(seconds / 60)).padStart(2, "0")}:
+              {String(seconds % 60).padStart(2, "0")}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+              Recording voice message…
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-10 shrink-0 rounded-full"
+              aria-label="Cancel voice message"
+              onClick={() => stopRecording(true)}
+            >
+              <Trash2 className="size-5" />
+            </Button>
+            <Button
+              size="icon"
+              className="size-10 shrink-0 rounded-full"
+              aria-label="Send voice message"
+              onClick={() => stopRecording(false)}
+            >
+              <ArrowUp className="size-5" />
+            </Button>
+          </div>
+        ) : (
         <div className="flex items-end gap-2">
+
           <input
             ref={fileRef}
             type="file"
