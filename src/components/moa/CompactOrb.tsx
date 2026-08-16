@@ -38,21 +38,28 @@ export function CompactOrb() {
     if (!pos) return;
     moved.current = false;
     offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     setDragging(true);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging) return;
-    moved.current = true;
+    // Only hijack the pointer once it is an actual drag, so taps still reach
+    // the orb (double-tap activation must keep working).
+    if (!moved.current) {
+      if (Math.abs(e.clientX - offset.current.x - pos!.x) < 4 && Math.abs(e.clientY - offset.current.y - pos!.y) < 4)
+        return;
+      moved.current = true;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    }
     setPos(clamp(e.clientX - offset.current.x, e.clientY - offset.current.y));
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
     if (!dragging) return;
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    if (moved.current) (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     setDragging(false);
   };
+
 
   if (!pos) return null;
 
