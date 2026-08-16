@@ -114,7 +114,7 @@ function StatusPill() {
   const { orbState, online, active } = useMoa();
   const label = !online ? "Offline" : !active ? "Dormant" : ORB_STATE_LABEL[orbState];
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
       {!online ? (
         <WifiOff className="size-3" aria-hidden />
       ) : (
@@ -127,6 +127,7 @@ function StatusPill() {
     </span>
   );
 }
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
