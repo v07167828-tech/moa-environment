@@ -724,7 +724,9 @@ export function ChatSurface({
             </Button>
           )}
         </div>
+        )}
       </div>
+
     </div>
   );
 }
