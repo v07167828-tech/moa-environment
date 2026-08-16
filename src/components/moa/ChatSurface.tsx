@@ -655,7 +655,11 @@ export function ChatSurface({
               >
                 <Link2 className="size-4" /> Add link
               </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void startRecording()}>
+                <Mic className="size-4" /> Voice message
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 onSelect={() =>
                   appendMessages([
