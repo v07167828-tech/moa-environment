@@ -23,6 +23,7 @@ import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as NumbersRouteImport } from './routes/numbers'
 import { Route as PermissionsRouteImport } from './routes/permissions'
 import { Route as PlannerRouteImport } from './routes/planner'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as VoiceRouteImport } from './routes/voice'
@@ -107,6 +108,11 @@ const PlannerRoute = PlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/numbers': typeof NumbersRoute
   '/permissions': typeof PermissionsRoute
   '/planner': typeof PlannerRoute
+  '/projects': typeof ProjectsRoute
   '/settings': typeof SettingsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByTo {
   '/numbers': typeof NumbersRoute
   '/permissions': typeof PermissionsRoute
   '/planner': typeof PlannerRoute
+  '/projects': typeof ProjectsRoute
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
   '/web': typeof WebRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/numbers': typeof NumbersRoute
   '/permissions': typeof PermissionsRoute
   '/planner': typeof PlannerRoute
+  '/projects': typeof ProjectsRoute
   '/settings': typeof SettingsRouteWithChildren
   '/skills': typeof SkillsRoute
   '/voice': typeof VoiceRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/numbers'
     | '/permissions'
     | '/planner'
+    | '/projects'
     | '/settings'
     | '/skills'
     | '/voice'
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/numbers'
     | '/permissions'
     | '/planner'
+    | '/projects'
     | '/skills'
     | '/voice'
     | '/web'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/numbers'
     | '/permissions'
     | '/planner'
+    | '/projects'
     | '/settings'
     | '/skills'
     | '/voice'
@@ -364,6 +376,7 @@ export interface RootRouteChildren {
   NumbersRoute: typeof NumbersRoute
   PermissionsRoute: typeof PermissionsRoute
   PlannerRoute: typeof PlannerRoute
+  ProjectsRoute: typeof ProjectsRoute
   SettingsRoute: typeof SettingsRouteWithChildren
   SkillsRoute: typeof SkillsRoute
   VoiceRoute: typeof VoiceRoute
@@ -470,6 +483,13 @@ declare module '@tanstack/react-router' {
       path: '/planner'
       fullPath: '/planner'
       preLoaderRoute: typeof PlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -613,6 +633,7 @@ const rootRouteChildren: RootRouteChildren = {
   NumbersRoute: NumbersRoute,
   PermissionsRoute: PermissionsRoute,
   PlannerRoute: PlannerRoute,
+  ProjectsRoute: ProjectsRoute,
   SettingsRoute: SettingsRouteWithChildren,
   SkillsRoute: SkillsRoute,
   VoiceRoute: VoiceRoute,
