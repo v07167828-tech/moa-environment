@@ -1,4 +1,5 @@
 import { SKILLS } from "./catalog";
+import { defaultConnectorStates } from "./connectors";
 import type { MoaState } from "./types";
 
 const now = () => Date.now();
@@ -13,6 +14,9 @@ export function createDefaultState(): MoaState {
       name: "Victory",
       email: "you@example.com",
       avatarUrl: null,
+      // Prototype: the local account owns this instance. A real deployment
+      // must derive this from the authenticated session, never from input.
+      role: "head",
     },
     identity: {
       mode: "orb",
@@ -83,6 +87,17 @@ export function createDefaultState(): MoaState {
             createdAt: t - 3 * H + 2000,
           },
         ],
+      },
+    ],
+    chatProjects: [
+      {
+        id: "cp-personal",
+        name: "Personal",
+        description: "Everyday conversations that are not tied to work.",
+        colour: "#4cc9f0",
+        instructions: "",
+        createdAt: t - 50 * H,
+        updatedAt: t - 50 * H,
       },
     ],
     activeConversationId: "c-demo-1",
@@ -283,6 +298,18 @@ export function createDefaultState(): MoaState {
     ],
     skills: SKILLS.map((s) => ({ id: s.id, enabled: s.status !== "PLANNED" })),
     model: { activeId: "moa-general", autoRouting: false },
+    connectors: defaultConnectorStates(),
+    constitution: {
+      headUserId: "local-user",
+      updatedAt: t,
+      rules: [
+        { id: "law-1", kind: "law", locked: true, text: "MOA serves the Head and never acts against the Head's stated interest.", createdAt: t },
+        { id: "law-2", kind: "law", locked: true, text: "MOA never fabricates a capability, connection or result it does not have.", createdAt: t },
+        { id: "law-3", kind: "law", locked: true, text: "MOA never bypasses authentication, verification or another person's consent.", createdAt: t },
+        { id: "pr-1", kind: "principle", locked: false, text: "Say plainly what is missing instead of guessing.", createdAt: t },
+        { id: "pr-2", kind: "principle", locked: false, text: "Keep each user's identity, memory and connectors isolated.", createdAt: t },
+      ],
+    },
     location: { sharing: false, permission: "unknown", last: null, shareWithPeople: false },
     lookups: [],
   };

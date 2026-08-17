@@ -57,6 +57,8 @@ export interface Conversation {
   messages: Message[];
   draft?: string;
   archived?: boolean;
+  /** Personal conversation project this chat belongs to (never a Builder project). */
+  projectId?: string | null;
 }
 
 export interface MemoryItem {
@@ -180,6 +182,8 @@ export interface UserProfile {
   name: string;
   email: string;
   avatarUrl: string | null;
+  /** Assigned by the account system, not self-declared. */
+  role: MoaRole;
 }
 
 export interface Personality {
@@ -230,6 +234,7 @@ export interface MoaState {
   appearance: Appearance;
   personality: Personality;
   conversations: Conversation[];
+  chatProjects: ChatProject[];
   activeConversationId: string | null;
   memories: MemoryItem[];
   knowledge: KnowledgeSource[];
@@ -244,6 +249,101 @@ export interface MoaState {
     activeId: string;
     autoRouting: boolean;
   };
+  connectors: ConnectorState[];
+  constitution: Constitution;
   location: LocationState;
   lookups: { id: string; number: string; at: number; result: string }[];
+}
+
+/* ------------------------------------------------------------------ *
+ * Roles and authorisation
+ * ------------------------------------------------------------------ */
+
+/** Head is the owner of this MOA instance. Roles come from the account
+ *  record, never from anything the user can type into a prompt. */
+export type MoaRole = "head" | "member" | "guest";
+
+/* ------------------------------------------------------------------ *
+ * Personal conversation projects (NOT Builder projects)
+ * ------------------------------------------------------------------ */
+
+export interface ChatProject {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  instructions: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/* ------------------------------------------------------------------ *
+ * Connector / Tool architecture
+ * ------------------------------------------------------------------ */
+
+export type ConnectorAuthKind = "oauth2" | "api_key" | "device" | "none";
+
+export type ConnectorStatus =
+  | "not configured"
+  | "awaiting authorisation"
+  | "connected"
+  | "error"
+  | "disabled";
+
+export interface ConnectorToolDefinition {
+  id: string;
+  name: string;
+  description: string;
+  /** Permission id (see MoaState.permissions) required to invoke this tool. */
+  permission: string;
+  /** Roles allowed to invoke it, enforced in the authorisation layer. */
+  roles: MoaRole[];
+  destructive?: boolean;
+}
+
+export interface ConnectorDefinition {
+  id: string;
+  name: string;
+  /** Capability area this connector serves. */
+  area: "web" | "maps" | "voice" | "files" | "email" | "numbers" | "code" | "model" | "devices";
+  description: string;
+  auth: ConnectorAuthKind;
+  /** Names of credentials the integration point expects; values NEVER live in state. */
+  credentials: string[];
+  tools: ConnectorToolDefinition[];
+  /** Skill ids (see catalog) that orchestrate this connector. */
+  skills: string[];
+  docsNote: string;
+}
+
+/** Per-user runtime state for a connector. No secrets are ever stored here. */
+export interface ConnectorState {
+  id: string;
+  enabled: boolean;
+  status: ConnectorStatus;
+  /** Display-only account label returned by a real authorisation flow. */
+  account: string | null;
+  /** True only when a real credential exists in the server-side vault. */
+  credentialsPresent: boolean;
+  lastCheckedAt: number | null;
+  error?: string;
+}
+
+/* ------------------------------------------------------------------ *
+ * Head Command / Constitution
+ * ------------------------------------------------------------------ */
+
+export interface ConstitutionRule {
+  id: string;
+  text: string;
+  kind: "law" | "principle" | "rule";
+  locked: boolean;
+  createdAt: number;
+}
+
+export interface Constitution {
+  /** Account id of the Head. Compared against the authenticated user id. */
+  headUserId: string;
+  rules: ConstitutionRule[];
+  updatedAt: number;
 }
