@@ -36,11 +36,19 @@ function loadState(): MoaState {
     return {
       ...base,
       ...parsed,
-      user: { ...base.user, ...parsed.user },
+      // role is never taken from stored/user-supplied data blindly; a real
+      // backend must assert it from the authenticated session.
+      user: { ...base.user, ...parsed.user, role: parsed.user?.role ?? base.user.role },
       identity: { ...base.identity, ...parsed.identity },
       appearance: { ...base.appearance, ...parsed.appearance },
       personality: { ...base.personality, ...parsed.personality },
       model: { ...base.model, ...parsed.model },
+      // Newer schema slices: fall back to defaults so older saved state loads.
+      chatProjects: parsed.chatProjects ?? base.chatProjects,
+      connectors: base.connectors.map(
+        (c) => parsed.connectors?.find((p) => p.id === c.id) ?? c,
+      ),
+      constitution: { ...base.constitution, ...parsed.constitution },
       location: { ...base.location, ...parsed.location },
     };
   } catch {
